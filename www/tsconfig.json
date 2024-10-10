@@ -16,7 +16,6 @@
   },
   "include": [
     "**/*.tsx",
-    ".next/types/**/*.ts"
   ],
   "exclude": []
 }

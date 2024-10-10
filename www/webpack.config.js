@@ -1,3 +1,4 @@
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 module.exports = {
@@ -35,4 +36,5 @@ module.exports = {
       directory: "./",
     },
   },
+  plugins: [new CopyWebpackPlugin({ patterns: ["index.html"] })],
 };
