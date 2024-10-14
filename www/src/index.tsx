@@ -39,7 +39,23 @@ function Home({}): JSX.Element {
           setSfen(e.detail.sfen);
         }}
       />
-      SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />
+      SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
+      <br />
+      SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
+      <button
+        onClick={() => {
+          const sfen = (
+            document.getElementById("sfen-input") as HTMLTextAreaElement
+          ).value;
+          const dom = document.getElementById("shogi-player");
+          dom?.setAttribute("sfen", sfen);
+        }}
+      >
+        Set SFEN
+      </button>
+      <br />
+      JSON output: <br />
+      <textarea id="json-output" readOnly rows={10} cols={80} />
     </div>
   );
 }
