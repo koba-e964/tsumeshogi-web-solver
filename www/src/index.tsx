@@ -2,11 +2,25 @@ import React, { useEffect } from "react";
 import Head from "next/head";
 import { createRoot } from "react-dom/client";
 import { ShogiPlayer } from "shogi-player-webcomponents";
+import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { createComponent } from "@lit/react";
 
 type PlayerUpdateEvent = {
   sfen: string;
 };
+
+function sfenInputHandler(): void {
+  const sfen = (document.getElementById("sfen-input") as HTMLTextAreaElement)
+    .value;
+  try {
+    parseSfen(sfen);
+  } catch (e) {
+    alert(e);
+    return;
+  }
+  const dom = document.getElementById("shogi-player");
+  dom?.setAttribute("sfen", sfen);
+}
 
 function Home({}): JSX.Element {
   // https://www.ai-shift.co.jp/techblog/3927
@@ -42,17 +56,7 @@ function Home({}): JSX.Element {
       SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
       <br />
       SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
-      <button
-        onClick={() => {
-          const sfen = (
-            document.getElementById("sfen-input") as HTMLTextAreaElement
-          ).value;
-          const dom = document.getElementById("shogi-player");
-          dom?.setAttribute("sfen", sfen);
-        }}
-      >
-        Set SFEN
-      </button>
+      <button onClick={sfenInputHandler}>Set SFEN</button>
       <br />
       JSON output: <br />
       <textarea id="json-output" readOnly rows={10} cols={80} />
