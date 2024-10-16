@@ -24,11 +24,15 @@ module.exports = {
           fullySpecified: false,
         },
       },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
     ],
   },
   resolve: {
     // 拡張子を配列で指定
-    extensions: [".ts", ".tsx", ".js"],
+    extensions: [".ts", ".tsx", ".js", ".css"],
   },
   // https://zenn.dev/sprout2000/articles/9d026d3d9e0e8f
   devServer: {

@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { ShogiPlayer } from "shogi-player-webcomponents";
 import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { createComponent } from "@lit/react";
+import "./App.css";
 
 type PlayerUpdateEvent = {
   sfen: string;
@@ -42,24 +43,35 @@ function Home({}): JSX.Element {
     dom?.setAttribute("sfen", sfen);
   });
   return (
-    <div>
+    <div className="whole-page">
       <Head>
         <title>詰将棋 Web ソルバー</title>
       </Head>
-      <SP
-        id="shogi-player"
-        mode="edit"
-        update={(e: CustomEvent<PlayerUpdateEvent>) => {
-          setSfen(e.detail.sfen);
-        }}
-      />
-      SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
-      <br />
-      SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
-      <button onClick={sfenInputHandler}>Set SFEN</button>
-      <br />
-      JSON output: <br />
-      <textarea id="json-output" readOnly rows={10} cols={80} />
+      <div className="whole-player">
+        <SP
+          id="shogi-player"
+          className="shogi-player left"
+          mode="edit"
+          update={(e: CustomEvent<PlayerUpdateEvent>) => {
+            setSfen(e.detail.sfen);
+          }}
+        />
+        <select size={10} className="right">
+          <option value="select">--指し手を選択--</option>
+          <option value="move_0">▲７二飛</option>
+        </select>
+      </div>
+      <div className="sfen-area">
+        SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
+        <br />
+        SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
+        <button onClick={sfenInputHandler}>Set SFEN</button>
+        <br />
+      </div>
+      <div>
+        JSON output: <br />
+        <textarea id="json-output" readOnly rows={10} cols={80} />
+      </div>
     </div>
   );
 }

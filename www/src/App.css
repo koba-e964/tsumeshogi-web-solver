@@ -1,0 +1,19 @@
+.whole-page {
+    display: grid;
+    justify-content: left;
+}
+.whole-board {
+    display: flex;
+}
+.sfen-area {
+    display: grid;
+}
+.shogi-player {
+    width: 70%;
+}
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
