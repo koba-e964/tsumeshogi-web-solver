@@ -5,6 +5,7 @@ import { ShogiPlayer } from "shogi-player-webcomponents";
 import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { createComponent } from "@lit/react";
 import "./App.css";
+import { ReadKif } from "./kif_parse";
 
 type PlayerUpdateEvent = {
   sfen: string;
@@ -42,6 +43,19 @@ function Home({}): JSX.Element {
     // For example, if you give an sfen string to the component directly, it will not be reflected.
     dom?.setAttribute("sfen", sfen);
   });
+  // Ref: https://qiita.com/disney_Lady_Pg/items/f54333f7b0d3611e8888
+  useEffect(() => {
+    const asyncWork = async () => {
+      const text = await ReadKif("");
+      const dom = document.getElementById("json-output")!;
+      if (!(dom instanceof HTMLTextAreaElement)) {
+        throw new Error("DOM is not a textarea");
+      }
+      console.log(dom);
+      dom.value = text;
+    };
+    asyncWork();
+  }, []);
   return (
     <div className="whole-page">
       <Head>
