@@ -1,0 +1,35 @@
+# https://qiita.com/shun198/items/86668be6a90634f9480c
+name: Jest
+
+on:
+  schedule:
+    - cron: '25 15 * * *'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  WORKING_DIRECTORY: www
+
+jobs:
+  Test:
+    name: Run test codes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install and cache nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ env.WORKING_DIRECTORY }}/package.json
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - name: Install packages
+        run: npm ci
+      - name: Show coverage
+        run: npm test -- --bail --maxWorkers=100% --watchAll=false --coverage
