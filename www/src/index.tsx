@@ -11,9 +11,22 @@ type PlayerUpdateEvent = {
   sfen: string;
 };
 
+async function sfenInputHandlerForUrl(pageUrl: string): Promise<void> {
+  const text = await ReadKif(pageUrl);
+  const dom = document.getElementById("json-output")!; // TODO: parse KIF and set it to sfen
+  if (!(dom instanceof HTMLTextAreaElement)) {
+    throw new Error("DOM is not a textarea");
+  }
+  dom.value = text;
+}
+
 function sfenInputHandler(): void {
   const sfen = (document.getElementById("sfen-input") as HTMLTextAreaElement)
     .value;
+  if (sfen.startsWith("https://")) {
+    sfenInputHandlerForUrl(sfen);
+    return;
+  }
   try {
     parseSfen(sfen);
   } catch (e) {
@@ -43,19 +56,6 @@ function Home({}): JSX.Element {
     // For example, if you give an sfen string to the component directly, it will not be reflected.
     dom?.setAttribute("sfen", sfen);
   });
-  // Ref: https://qiita.com/disney_Lady_Pg/items/f54333f7b0d3611e8888
-  useEffect(() => {
-    const asyncWork = async () => {
-      const text = await ReadKif("");
-      const dom = document.getElementById("json-output")!;
-      if (!(dom instanceof HTMLTextAreaElement)) {
-        throw new Error("DOM is not a textarea");
-      }
-      console.log(dom);
-      dom.value = text;
-    };
-    asyncWork();
-  }, []);
   return (
     <div className="whole-page">
       <Head>
@@ -79,7 +79,7 @@ function Home({}): JSX.Element {
         SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
         <br />
         SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
-        <button onClick={sfenInputHandler}>Set SFEN</button>
+        <button onClick={sfenInputHandler}>Set SFEN/URL</button>
         <br />
       </div>
       <div>
