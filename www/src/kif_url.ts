@@ -1,5 +1,6 @@
 import { err, ok, Result } from "neverthrow";
 import ProxyFetch from "./proxy_fetch";
+import Encoding from "encoding-japanese";
 
 export async function PageUrlToKifUrl(
   pageUrl: string
@@ -15,7 +16,7 @@ export async function PageUrlToKifUrl(
     return ok(`https://aidn.jp/shogi/data/${problem_name}.kif`);
   }
   if (pageUrl.startsWith("https://www.shogi.or.jp/tsume_shogi/everyday/")) {
-    const content = await ProxyFetch(pageUrl);
+    const content = Encoding.codeToString(await ProxyFetch(pageUrl));
     const match = content.match(/kifu_path:     '(.*)',/);
     if (match) {
       return ok(match[1]);

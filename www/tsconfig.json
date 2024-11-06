@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // https://dev.to/kkazala/jest-errors-1in7
+    "esModuleInterop": true,
     "strictNullChecks": true,
     "noUnusedLocals" : true,
     "noImplicitThis": true,

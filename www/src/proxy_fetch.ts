@@ -1,4 +1,4 @@
-export default async function ProxyFetch(rawUrl: string): Promise<string> {
+export default async function ProxyFetch(rawUrl: string): Promise<Uint8Array> {
   let url: string;
   if (rawUrl.endsWith(".html")) {
     // corsproxy.io doesn't support HTML contents.
@@ -16,5 +16,5 @@ export default async function ProxyFetch(rawUrl: string): Promise<string> {
   if (!resp.ok) {
     throw new Error(`fetch error: ${resp.status} ${resp.statusText}`);
   }
-  return await resp.text();
+  return new Uint8Array(await resp.arrayBuffer());
 }

@@ -12,12 +12,10 @@ type PlayerUpdateEvent = {
 };
 
 async function sfenInputHandlerForUrl(pageUrl: string): Promise<void> {
-  const text = await ReadKif(pageUrl);
-  const dom = document.getElementById("json-output")!; // TODO: parse KIF and set it to sfen
-  if (!(dom instanceof HTMLTextAreaElement)) {
-    throw new Error("DOM is not a textarea");
-  }
-  dom.value = text;
+  // TODO: display loading info when loading
+  const sfen = await ReadKif(pageUrl);
+  const dom = document.getElementById("shogi-player");
+  dom?.setAttribute("sfen", sfen);
 }
 
 function sfenInputHandler(): void {
@@ -78,7 +76,7 @@ function Home({}): JSX.Element {
       <div className="sfen-area">
         SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
         <br />
-        SFEN input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
+        SFEN/URL input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
         <button onClick={sfenInputHandler}>Set SFEN/URL</button>
         <br />
       </div>
