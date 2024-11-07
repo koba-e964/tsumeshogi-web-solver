@@ -77,10 +77,27 @@ export default function WholePlayer({}): JSX.Element {
             );
           }}
         />
-        <select size={10} className="right">
-          <option value="select">--指し手を選択--</option>
-          <option value="move_0">▲７二飛</option>
-        </select>
+        <div className="boards-control-panel">
+          <select size={10} className="right">
+            <option value="select">--指し手を選択--</option>
+            <option value="move_0">▲７二飛</option>
+          </select>
+          <select size={10} className="right">
+            <option value="select">--分岐を選択--</option>
+            <option value="move_0">▲１二歩成</option>
+            <option value="move_0">▲１二竜</option>
+          </select>
+        </div>
+        <div>
+          手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}{" "}
+          <button
+            onClick={() => {
+              setSfen(sfenChangePlayer(sfen));
+            }}
+          >
+            手番変更
+          </button>
+        </div>
       </div>
       <div className="sfen-area">
         SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
@@ -113,4 +130,9 @@ function isValidSfen(sfen: string): Result<null, Error> {
     }
     return err(new Error(`Unknown error: ${e}`));
   }
+}
+
+function sfenChangePlayer(sfen: string): string {
+  const [board, turn, hand] = sfen.split(" ");
+  return `${board} ${turn === "b" ? "w" : "b"} ${hand}`;
 }

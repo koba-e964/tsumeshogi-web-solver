@@ -5,6 +5,9 @@
 .whole-board {
     display: flex;
 }
+.boards-control-panel {
+    display: flex;
+}
 .sfen-area {
     display: grid;
 }
