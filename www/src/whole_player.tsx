@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import { ShogiPlayer } from "shogi-player-webcomponents";
-import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { createComponent } from "@lit/react";
 import "./App.css";
 import { ReadKif } from "./kif_parse";
-import { err, ok, Result } from "neverthrow";
+import * as sfenUtils from "./sfen";
 
 const defaultSfen: string = "8k/9/7+RP/9/9/9/9/9/9 b r2b4g4s4n4l17p 1";
 
@@ -27,7 +26,7 @@ function sfenInputHandler(): void {
     sfenInputHandlerForUrl(sfen);
     return;
   }
-  const result = isValidSfen(sfen);
+  const result = sfenUtils.isValidSfen(sfen);
   if (result.isErr()) {
     alert(result.error.message);
     return;
@@ -48,7 +47,7 @@ export default function WholePlayer({}): JSX.Element {
   });
   const params = new URLSearchParams(location.search);
   let sfenParam = params.get("sfen") || defaultSfen;
-  if (isValidSfen(sfenParam).isErr()) {
+  if (sfenUtils.isValidSfen(sfenParam).isErr()) {
     sfenParam = defaultSfen;
   }
   const [sfen, setSfen] = React.useState(sfenParam);
@@ -94,22 +93,23 @@ export default function WholePlayer({}): JSX.Element {
           <br />
           <button
             onClick={() => {
-              setSfen(sfenChangePlayer(sfen));
+              setSfen(sfenUtils.sfenChangePlayer(sfen));
             }}
           >
             手番変更
           </button>
         </div>
         <div>
-          双玉詰将棋: {sfenAreBothKingsPresent(sfen) ? "有効" : "無効"}
+          双玉詰将棋:{" "}
+          {sfenUtils.sfenAreBothKingsPresent(sfen) ? "有効" : "無効"}
           <br />
           <button
             onClick={() => {
-              if (sfenAreBothKingsPresent(sfen)) {
-                setSfen(sfenRemoveBlackKing(sfen));
+              if (sfenUtils.sfenAreBothKingsPresent(sfen)) {
+                setSfen(sfenUtils.sfenRemoveBlackKing(sfen));
                 return;
               } else {
-                setSfen(sfenAddBlackKing(sfen));
+                setSfen(sfenUtils.sfenAddBlackKing(sfen));
               }
               return;
             }}
@@ -137,47 +137,4 @@ export async function getStaticProps(): Promise<{ props: {} }> {
   return {
     props: {},
   };
-}
-
-function isValidSfen(sfen: string): Result<null, Error> {
-  try {
-    parseSfen(sfen);
-    return ok(null);
-  } catch (e) {
-    if (e instanceof Error) {
-      return err(e);
-    }
-    return err(new Error(`Unknown error: ${e}`));
-  }
-}
-
-function sfenChangePlayer(sfen: string): string {
-  const [board, turn, hand] = sfen.split(" ");
-  return `${board} ${turn === "b" ? "w" : "b"} ${hand}`;
-}
-
-function sfenAreBothKingsPresent(sfen: string): boolean {
-  return sfen.includes("K") && sfen.includes("k");
-}
-
-function sfenAddBlackKing(sfen: string): string {
-  if (sfen.includes("K")) {
-    alert("先手の玉がすでに配置されています");
-    return sfen;
-  }
-  const [board, turn, hand, numMoves] = sfen.split(" ");
-  return `${board} ${turn} K${hand}  ${numMoves}`;
-}
-
-function sfenRemoveBlackKing(sfen: string): string {
-  if (!sfen.includes("K")) {
-    alert("先手の玉が配置されていません");
-    return sfen;
-  }
-  const newSfen = sfen.replace("K", "");
-  if (isValidSfen(newSfen).isErr()) {
-    // the row containing K changes like 6K2 -> 612, which is fortunately fine for shogi-player
-    return sfen.replace("K", "1");
-  }
-  return newSfen;
 }
