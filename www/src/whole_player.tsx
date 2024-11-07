@@ -44,9 +44,10 @@ export default function WholePlayer({}): JSX.Element {
       update: "update",
     },
   });
-  const [sfen, setSfen] = React.useState(
-    "4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1"
-  );
+  const params = new URLSearchParams(location.search);
+  const sfenParam =
+    params.get("sfen") || "4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1";
+  const [sfen, setSfen] = React.useState(sfenParam);
   useEffect(() => {
     const dom = document.getElementById("shogi-player");
     // You need to set sfen after the component is mounted.
@@ -65,6 +66,11 @@ export default function WholePlayer({}): JSX.Element {
           mode="edit"
           update={(e: CustomEvent<PlayerUpdateEvent>) => {
             setSfen(e.detail.sfen);
+            window.history.replaceState(
+              null,
+              "",
+              `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`
+            );
           }}
         />
         <select size={10} className="right">
