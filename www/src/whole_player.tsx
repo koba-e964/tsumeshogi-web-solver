@@ -5,6 +5,7 @@ import { createComponent } from "@lit/react";
 import "./App.css";
 import { ReadKif } from "./kif_parse";
 import * as sfenUtils from "./sfen";
+import BranchSelector from "./branch_selector";
 
 const defaultSfen: string = "8k/9/7+RP/9/9/9/9/9/9 b r2b4g4s4n4l17p 1";
 
@@ -77,17 +78,7 @@ export default function WholePlayer({}): JSX.Element {
             );
           }}
         />
-        <div className="boards-control-panel">
-          <select size={10} className="right">
-            <option value="select">--指し手を選択--</option>
-            <option value="move_0">▲７二飛</option>
-          </select>
-          <select size={10} className="right">
-            <option value="select">--分岐を選択--</option>
-            <option value="move_0">▲１二歩成</option>
-            <option value="move_0">▲１二竜</option>
-          </select>
-        </div>
+        <BranchSelector branches={[]} />
         <div>
           手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
           <br />

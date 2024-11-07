@@ -6,7 +6,9 @@ digraph dep {
     "whole_player.tsx" -> "App.css"
     "whole_player.tsx" -> "sfen.ts"
     "whole_player.tsx" -> "kif_parse.ts"
+    "whole_player.tsx" -> "branch_selector.tsx"
     "kif_parse.ts" -> "kif_url.ts"
     "kif_parse.ts" -> "proxy_fetch.ts"
     "kif_url.ts" -> "proxy_fetch.ts"
+    "branch_selector.tsx" -> "branches.ts"
 }
