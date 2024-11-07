@@ -63,6 +63,7 @@ export default function WholePlayer({}): JSX.Element {
       <Head>
         <title>詰将棋 Web ソルバー</title>
       </Head>
+      <h1>詰将棋 Web ソルバー</h1>
       <div className="whole-player">
         <SP
           id="shogi-player"
@@ -89,13 +90,31 @@ export default function WholePlayer({}): JSX.Element {
           </select>
         </div>
         <div>
-          手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}{" "}
+          手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
+          <br />
           <button
             onClick={() => {
               setSfen(sfenChangePlayer(sfen));
             }}
           >
             手番変更
+          </button>
+        </div>
+        <div>
+          双玉詰将棋: {sfenAreBothKingsPresent(sfen) ? "有効" : "無効"}
+          <br />
+          <button
+            onClick={() => {
+              if (sfenAreBothKingsPresent(sfen)) {
+                setSfen(sfenRemoveBlackKing(sfen));
+                return;
+              } else {
+                setSfen(sfenAddBlackKing(sfen));
+              }
+              return;
+            }}
+          >
+            双玉詰将棋にする/やめる
           </button>
         </div>
       </div>
@@ -135,4 +154,30 @@ function isValidSfen(sfen: string): Result<null, Error> {
 function sfenChangePlayer(sfen: string): string {
   const [board, turn, hand] = sfen.split(" ");
   return `${board} ${turn === "b" ? "w" : "b"} ${hand}`;
+}
+
+function sfenAreBothKingsPresent(sfen: string): boolean {
+  return sfen.includes("K") && sfen.includes("k");
+}
+
+function sfenAddBlackKing(sfen: string): string {
+  if (sfen.includes("K")) {
+    alert("先手の玉がすでに配置されています");
+    return sfen;
+  }
+  const [board, turn, hand, numMoves] = sfen.split(" ");
+  return `${board} ${turn} K${hand}  ${numMoves}`;
+}
+
+function sfenRemoveBlackKing(sfen: string): string {
+  if (!sfen.includes("K")) {
+    alert("先手の玉が配置されていません");
+    return sfen;
+  }
+  const newSfen = sfen.replace("K", "");
+  if (isValidSfen(newSfen).isErr()) {
+    // the row containing K changes like 6K2 -> 612, which is fortunately fine for shogi-player
+    return sfen.replace("K", "1");
+  }
+  return newSfen;
 }
