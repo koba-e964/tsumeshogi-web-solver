@@ -5,6 +5,9 @@ import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { createComponent } from "@lit/react";
 import "./App.css";
 import { ReadKif } from "./kif_parse";
+import { err, ok, Result } from "neverthrow";
+
+const defaultSfen: string = "8k/9/7+RP/9/9/9/9/9/9 b r2b4g4s4n4l17p 1";
 
 type PlayerUpdateEvent = {
   sfen: string;
@@ -24,10 +27,9 @@ function sfenInputHandler(): void {
     sfenInputHandlerForUrl(sfen);
     return;
   }
-  try {
-    parseSfen(sfen);
-  } catch (e) {
-    alert(e);
+  const result = isValidSfen(sfen);
+  if (result.isErr()) {
+    alert(result.error.message);
     return;
   }
   const dom = document.getElementById("shogi-player");
@@ -45,8 +47,10 @@ export default function WholePlayer({}): JSX.Element {
     },
   });
   const params = new URLSearchParams(location.search);
-  const sfenParam =
-    params.get("sfen") || "4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1";
+  let sfenParam = params.get("sfen") || defaultSfen;
+  if (isValidSfen(sfenParam).isErr()) {
+    sfenParam = defaultSfen;
+  }
   const [sfen, setSfen] = React.useState(sfenParam);
   useEffect(() => {
     const dom = document.getElementById("shogi-player");
@@ -97,4 +101,16 @@ export async function getStaticProps(): Promise<{ props: {} }> {
   return {
     props: {},
   };
+}
+
+function isValidSfen(sfen: string): Result<null, Error> {
+  try {
+    parseSfen(sfen);
+    return ok(null);
+  } catch (e) {
+    if (e instanceof Error) {
+      return err(e);
+    }
+    return err(new Error(`Unknown error: ${e}`));
+  }
 }
