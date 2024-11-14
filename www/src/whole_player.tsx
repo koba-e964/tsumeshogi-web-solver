@@ -58,6 +58,36 @@ export default function WholePlayer({}): JSX.Element {
     // For example, if you give an sfen string to the component directly, it will not be reflected.
     dom?.setAttribute("sfen", sfen);
   });
+
+  const move0 = { usi: "2c1b", official_kifu: "▲１二竜" };
+  const move1 = { usi: "1c1a+", official_kifu: "▲１二歩成" };
+  const move2 = { usi: "1c1a", official_kifu: "▲１二歩不成" };
+  const mateEval = { num_moves: 0, pieces: 0, futile: 0 };
+  const branches = [
+    {
+      moves: [],
+      possible_next_moves: [move0, move1, move2],
+      eval: null,
+    },
+    {
+      moves: [move0],
+      possible_next_moves: [],
+      eval: mateEval,
+    },
+    {
+      moves: [move1],
+      possible_next_moves: [],
+      eval: mateEval,
+    },
+    {
+      moves: [move2],
+      possible_next_moves: [],
+      eval: mateEval,
+    },
+  ];
+  const [plyIndex, setPlyIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
   return (
     <div className="whole-page">
       <Head>
@@ -78,7 +108,20 @@ export default function WholePlayer({}): JSX.Element {
             );
           }}
         />
-        <BranchSelector branches={[]} />
+        <BranchSelector
+          branches={branches}
+          mainstream={[move0]}
+          plyIndex={plyIndex}
+          selectedIndex={selectedIndex}
+          plyHandler={(plyIndex: number) => {
+            console.log(plyIndex);
+            setPlyIndex(plyIndex);
+          }}
+          selectHandler={(selectedIndex: number) => {
+            console.log(selectedIndex);
+            setSelectedIndex(selectedIndex);
+          }}
+        />
         <div>
           手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
           <br />
