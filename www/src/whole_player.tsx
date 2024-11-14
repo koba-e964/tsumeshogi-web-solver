@@ -6,8 +6,9 @@ import "./App.css";
 import { ReadKif } from "./kif_parse";
 import * as sfenUtils from "./sfen";
 import BranchSelector from "./branch_selector";
+import { branchDictFromBranches, createSelectionData, Move } from "./branches";
 
-const defaultSfen: string = "8k/9/7+RP/9/9/9/9/9/9 b r2b4g4s4n4l17p 1";
+const defaultSfen: string = "9/4k4/9/4P4/9/9/9/9/9 b 2G3r2b2g4s4n4l 1";
 
 type PlayerUpdateEvent = {
   sfen: string;
@@ -59,34 +60,63 @@ export default function WholePlayer({}): JSX.Element {
     dom?.setAttribute("sfen", sfen);
   });
 
-  const move0 = { usi: "2c1b", official_kifu: "▲１二竜" };
-  const move1 = { usi: "1c1a+", official_kifu: "▲１二歩成" };
-  const move2 = { usi: "1c1a", official_kifu: "▲１二歩不成" };
+  const move0 = { usi: "G*5c", official_kifu: "▲５三金" };
+  const move00 = { usi: "5b6a", official_kifu: "△６一玉" };
+  const move01 = { usi: "5b5a", official_kifu: "△５一玉" };
+  const move02 = { usi: "5b4a", official_kifu: "△４一玉" };
+  const move000 = { usi: "G*6b", official_kifu: "▲６二金打" };
+  const move010 = { usi: "G*5b", official_kifu: "▲５二金打" };
+  const move020 = { usi: "G*4b", official_kifu: "▲４二金打" };
   const mateEval = { num_moves: 0, pieces: 0, futile: 0 };
   const branches = [
     {
       moves: [],
-      possible_next_moves: [move0, move1, move2],
+      possible_next_moves: [move0],
       eval: null,
     },
     {
       moves: [move0],
-      possible_next_moves: [],
+      possible_next_moves: [move00, move01, move02],
+      eval: null,
+    },
+    {
+      moves: [move0, move00],
+      possible_next_moves: [move000],
       eval: mateEval,
     },
     {
-      moves: [move1],
-      possible_next_moves: [],
+      moves: [move0, move01],
+      possible_next_moves: [move010],
       eval: mateEval,
     },
     {
-      moves: [move2],
-      possible_next_moves: [],
+      moves: [move0, move02],
+      possible_next_moves: [move020],
       eval: mateEval,
     },
   ];
   const [plyIndex, setPlyIndex] = React.useState(0);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectionData, setSelectionData] = React.useState(
+    createSelectionData(branches)
+  );
+  console.log(selectionData.dict);
+  const branchDict = branchDictFromBranches(branches);
+  const mainstream: Move[] = [];
+  {
+    console.log(mainstream);
+    for (let i = 0; i < 100; i++) {
+      const index = selectionData.get(mainstream);
+      if (
+        !branchDict.get(mainstream) ||
+        index >= branchDict.get(mainstream).possible_next_moves.length
+      ) {
+        break;
+      }
+      const move = branchDict.get(mainstream).possible_next_moves[index];
+      mainstream.push(move);
+    }
+  }
 
   return (
     <div className="whole-page">
@@ -110,7 +140,7 @@ export default function WholePlayer({}): JSX.Element {
         />
         <BranchSelector
           branches={branches}
-          mainstream={[move0]}
+          mainstream={mainstream}
           plyIndex={plyIndex}
           selectedIndex={selectedIndex}
           plyHandler={(plyIndex: number) => {
@@ -119,7 +149,10 @@ export default function WholePlayer({}): JSX.Element {
           }}
           selectHandler={(selectedIndex: number) => {
             console.log(selectedIndex);
+            const moves = mainstream.slice(0, plyIndex - 1);
+            setSelectionData(selectionData.update(moves, selectedIndex));
             setSelectedIndex(selectedIndex);
+            console.log(selectionData.dict);
           }}
         />
         <div>

@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { Branches, UsiMove } from "./branches";
+import { branchDictFromBranches, Branches, Move } from "./branches";
 
 export default function BranchSelector({
   branches,
@@ -9,6 +9,7 @@ export default function BranchSelector({
   plyHandler,
   selectHandler,
 }: BranchSelectorProps): JSX.Element {
+  const dict = branchDictFromBranches(branches);
   const plyList = [];
   for (let i = 0; i < mainstream.length + 1; i++) {
     const text = i == 0 ? "初期局面" : mainstream[i - 1].official_kifu;
@@ -20,10 +21,12 @@ export default function BranchSelector({
   }
   const branchList = [];
   if (plyIndex > 0) {
-    for (let i = 0; i < 3; i++) {
+    const moves = mainstream.slice(0, plyIndex - 1);
+    const entry = dict.get(moves);
+    for (let i = 0; i < entry.possible_next_moves.length; i++) {
       branchList.push(
         <option value={`${i}`} key={`branch_${i}`}>
-          {branches[0].possible_next_moves[i].official_kifu}
+          {entry.possible_next_moves[i].official_kifu}
         </option>
       );
     }
@@ -60,7 +63,7 @@ export default function BranchSelector({
 
 type BranchSelectorProps = {
   branches: Branches;
-  mainstream: UsiMove[];
+  mainstream: Move[];
   plyIndex: number;
   selectedIndex: number;
   plyHandler: (plyIndex: number) => void;
