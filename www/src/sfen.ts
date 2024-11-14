@@ -1,5 +1,6 @@
 import { parseSfen } from "shogi-player-webcomponents/dist/sfen.js";
 import { err, ok, Result } from "neverthrow";
+import { Record } from "tsshogi";
 
 export function isValidSfen(sfen: string): Result<null, Error> {
   try {
@@ -42,4 +43,22 @@ export function sfenRemoveBlackKing(sfen: string): string {
     return sfen.replace("K", "1");
   }
   return newSfen;
+}
+
+export function makeMoves(initialSfen: string, usiMoves: string[]): string {
+  let usiString = "position sfen " + initialSfen + " moves";
+  let record = Record.newByUSI(usiString);
+  if (record instanceof Error) {
+    console.log(usiString);
+    throw record;
+  }
+  for (const move of usiMoves) {
+    usiString += " " + move;
+    record = Record.newByUSI(usiString);
+    if (record instanceof Error) {
+      console.log(usiString);
+      throw record;
+    }
+  }
+  return record.sfen;
 }

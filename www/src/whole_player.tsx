@@ -52,13 +52,8 @@ export default function WholePlayer({}): JSX.Element {
   if (sfenUtils.isValidSfen(sfenParam).isErr()) {
     sfenParam = defaultSfen;
   }
-  const [sfen, setSfen] = React.useState(sfenParam);
-  useEffect(() => {
-    const dom = document.getElementById("shogi-player");
-    // You need to set sfen after the component is mounted.
-    // For example, if you give an sfen string to the component directly, it will not be reflected.
-    dom?.setAttribute("sfen", sfen);
-  });
+  const [initialSfen, setInitialSfen] = React.useState(sfenParam);
+  const [editing, _setEditing] = React.useState(false);
 
   const move0 = { usi: "G*5c", official_kifu: "▲５三金" };
   const move00 = { usi: "5b6a", official_kifu: "△６一玉" };
@@ -117,11 +112,9 @@ export default function WholePlayer({}): JSX.Element {
   const [selectionData, setSelectionData] = React.useState(
     createSelectionData(branches)
   );
-  console.log(selectionData.dict);
   const branchDict = branchDictFromBranches(branches);
   const mainstream: Move[] = [];
   {
-    console.log(mainstream);
     while (true) {
       const index = selectionData.get(mainstream);
       if (
@@ -135,6 +128,17 @@ export default function WholePlayer({}): JSX.Element {
     }
   }
 
+  useEffect(() => {
+    const dom = document.getElementById("shogi-player");
+    // You need to set sfen after the component is mounted.
+    // For example, if you give an sfen string to the component directly, it will not be reflected.
+    const alteredSfen = sfenUtils.makeMoves(
+      initialSfen,
+      mainstream.slice(0, plyIndex).map((move) => move.usi)
+    );
+    dom?.setAttribute("sfen", alteredSfen);
+  });
+
   return (
     <div className="whole-page">
       <Head>
@@ -147,12 +151,14 @@ export default function WholePlayer({}): JSX.Element {
           className="shogi-player left"
           mode="edit"
           update={(e: CustomEvent<PlayerUpdateEvent>) => {
-            setSfen(e.detail.sfen);
-            window.history.replaceState(
-              null,
-              "",
-              `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`
-            );
+            if (editing) {
+              setInitialSfen(e.detail.sfen);
+              window.history.replaceState(
+                null,
+                "",
+                `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`
+              );
+            }
           }}
         />
         <BranchSelector
@@ -161,23 +167,20 @@ export default function WholePlayer({}): JSX.Element {
           plyIndex={plyIndex}
           selectedIndex={selectedIndex}
           plyHandler={(plyIndex: number) => {
-            console.log(plyIndex);
             setPlyIndex(plyIndex);
           }}
           selectHandler={(selectedIndex: number) => {
-            console.log(selectedIndex);
             const moves = mainstream.slice(0, plyIndex - 1);
             setSelectionData(selectionData.update(moves, selectedIndex));
             setSelectedIndex(selectedIndex);
-            console.log(selectionData.dict);
           }}
         />
         <div>
-          手番: {sfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
+          手番: {initialSfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
           <br />
           <button
             onClick={() => {
-              setSfen(sfenUtils.sfenChangePlayer(sfen));
+              setInitialSfen(sfenUtils.sfenChangePlayer(initialSfen));
             }}
           >
             手番変更
@@ -185,15 +188,15 @@ export default function WholePlayer({}): JSX.Element {
         </div>
         <div>
           双玉詰将棋:{" "}
-          {sfenUtils.sfenAreBothKingsPresent(sfen) ? "有効" : "無効"}
+          {sfenUtils.sfenAreBothKingsPresent(initialSfen) ? "有効" : "無効"}
           <br />
           <button
             onClick={() => {
-              if (sfenUtils.sfenAreBothKingsPresent(sfen)) {
-                setSfen(sfenUtils.sfenRemoveBlackKing(sfen));
+              if (sfenUtils.sfenAreBothKingsPresent(initialSfen)) {
+                setInitialSfen(sfenUtils.sfenRemoveBlackKing(initialSfen));
                 return;
               } else {
-                setSfen(sfenUtils.sfenAddBlackKing(sfen));
+                setInitialSfen(sfenUtils.sfenAddBlackKing(initialSfen));
               }
               return;
             }}
@@ -203,7 +206,8 @@ export default function WholePlayer({}): JSX.Element {
         </div>
       </div>
       <div className="sfen-area">
-        SFEN: <textarea id="sfen" readOnly value={sfen} rows={1} cols={80} />{" "}
+        SFEN:{" "}
+        <textarea id="sfen" readOnly value={initialSfen} rows={1} cols={80} />{" "}
         <br />
         SFEN/URL input: <textarea id="sfen-input" rows={1} cols={80} />{" "}
         <button onClick={sfenInputHandler}>Set SFEN/URL</button>
