@@ -15,7 +15,7 @@ export default function BranchSelector({
     const text = i == 0 ? "初期局面" : mainstream[i - 1].official_kifu;
     plyList.push(
       <option value={`${i}`} key={`move_${i}`}>
-        {text}
+        {i}:{text}
       </option>
     );
   }
@@ -31,32 +31,41 @@ export default function BranchSelector({
       );
     }
   }
+  const evalValue = dict.get(mainstream.slice(0, plyIndex))?.eval;
   return (
-    <div className="boards-control-panel">
-      <select
-        size={10}
-        defaultValue={plyIndex}
-        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-          plyHandler(parseInt(event.target.value))
-        }
-      >
-        <option value="select" disabled>
-          --指し手を選択--
-        </option>
-        {plyList}
-      </select>
-      <select
-        size={10}
-        defaultValue={selectedIndex}
-        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-          selectHandler(parseInt(event.target.value))
-        }
-      >
-        <option value="select" disabled>
-          --分岐を選択--
-        </option>
-        {branchList}
-      </select>
+    <div>
+      <div className="boards-control-panel">
+        <select
+          size={10}
+          defaultValue={plyIndex}
+          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+            plyHandler(parseInt(event.target.value))
+          }
+        >
+          <option value="select" disabled>
+            --指し手を選択--
+          </option>
+          {plyList}
+        </select>
+        <select
+          size={10}
+          defaultValue={selectedIndex}
+          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+            selectHandler(parseInt(event.target.value))
+          }
+        >
+          <option value="select" disabled>
+            --分岐を選択--
+          </option>
+          {branchList}
+        </select>
+      </div>
+      評価値:{" "}
+      {evalValue
+        ? evalValue.num_moves == 0
+          ? "詰み"
+          : `${evalValue.num_moves}手詰`
+        : "????"}
     </div>
   );
 }

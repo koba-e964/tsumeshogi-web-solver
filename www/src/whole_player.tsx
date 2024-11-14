@@ -68,30 +68,47 @@ export default function WholePlayer({}): JSX.Element {
   const move010 = { usi: "G*5b", official_kifu: "▲５二金打" };
   const move020 = { usi: "G*4b", official_kifu: "▲４二金打" };
   const mateEval = { num_moves: 0, pieces: 0, futile: 0 };
+  const oneEval = { num_moves: 1, pieces: 1, futile: 0 };
+  const twoEval = { num_moves: 2, pieces: 1, futile: 0 };
   const branches = [
     {
       moves: [],
       possible_next_moves: [move0],
-      eval: null,
+      eval: { num_moves: 3, pieces: 2, futile: 0 },
     },
     {
       moves: [move0],
       possible_next_moves: [move00, move01, move02],
-      eval: null,
+      eval: twoEval,
     },
     {
       moves: [move0, move00],
       possible_next_moves: [move000],
-      eval: mateEval,
+      eval: oneEval,
     },
     {
       moves: [move0, move01],
       possible_next_moves: [move010],
-      eval: mateEval,
+      eval: oneEval,
     },
     {
       moves: [move0, move02],
       possible_next_moves: [move020],
+      eval: oneEval,
+    },
+    {
+      moves: [move0, move00, move000],
+      possible_next_moves: [],
+      eval: mateEval,
+    },
+    {
+      moves: [move0, move01, move010],
+      possible_next_moves: [],
+      eval: mateEval,
+    },
+    {
+      moves: [move0, move02, move020],
+      possible_next_moves: [],
       eval: mateEval,
     },
   ];
@@ -105,7 +122,7 @@ export default function WholePlayer({}): JSX.Element {
   const mainstream: Move[] = [];
   {
     console.log(mainstream);
-    for (let i = 0; i < 100; i++) {
+    while (true) {
       const index = selectionData.get(mainstream);
       if (
         !branchDict.get(mainstream) ||
