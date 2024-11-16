@@ -1,0 +1,25 @@
+[package]
+repository = "https://github.com/koba-e964/tsumeshogi-web-solver"
+name = "tsumeshogi-web-solver"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[features]
+default = ["wee_alloc"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+shogi_core = "0.1.4"
+shogi_usi_parser = "0.1.0"
+shogi_official_kifu = "0.1.1"
+wasm-bindgen = "0.2"
+serde-wasm-bindgen = "0.6"
+wee_alloc = { version = "0.4.5", optional = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "z"
