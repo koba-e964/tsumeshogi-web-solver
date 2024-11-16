@@ -23,7 +23,7 @@ export class BranchDict<T> {
     this.dict = dict;
   }
   get(moves: Move[]): T {
-    return this.dict[moves.map((move) => move.usi).join("_")];
+    return this.dict[moves.map((move) => move.usi).join("_")]!;
   }
   update(moves: Move[], value: T): BranchDict<T> {
     const key = moves.map((move) => move.usi).join("_");

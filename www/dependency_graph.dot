@@ -8,8 +8,10 @@ digraph dep {
     "whole_player.tsx" -> "kif_parse.ts"
     "whole_player.tsx" -> "branch_selector.tsx"
     "whole_player.tsx" -> "branches.ts"
+    "whole_player.tsx" -> "solve.ts"
     "kif_parse.ts" -> "kif_url.ts"
     "kif_parse.ts" -> "proxy_fetch.ts"
     "kif_url.ts" -> "proxy_fetch.ts"
     "branch_selector.tsx" -> "branches.ts"
+    "solve.ts" -> "branches.ts"
 }

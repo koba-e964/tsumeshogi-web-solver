@@ -6,9 +6,21 @@ import "./App.css";
 import { ReadKif } from "./kif_parse";
 import * as sfenUtils from "./sfen";
 import BranchSelector from "./branch_selector";
-import { branchDictFromBranches, createSelectionData, Move } from "./branches";
+import {
+  branchDictFromBranches,
+  Branches,
+  createSelectionData,
+  Move,
+} from "./branches";
+import solve from "./solve";
 
-const defaultSfen: string = "9/4k4/9/4P4/9/9/9/9/9 b 2G3r2b2g4s4n4l 1";
+const defaultSfen: string = "9/4k4/9/4P4/9/9/9/9/9 b 2G2r2b2g4s4n4l17p 1";
+
+const enum Mode {
+  Editing,
+  Solving,
+  Viewing,
+}
 
 type PlayerUpdateEvent = {
   sfen: string;
@@ -53,60 +65,9 @@ export default function WholePlayer({}): JSX.Element {
     sfenParam = defaultSfen;
   }
   const [initialSfen, setInitialSfen] = React.useState(sfenParam);
-  const [editing, _setEditing] = React.useState(false);
+  const [mode, setMode] = React.useState(Mode.Editing);
 
-  const move0 = { usi: "G*5c", official_kifu: "▲５三金" };
-  const move00 = { usi: "5b6a", official_kifu: "△６一玉" };
-  const move01 = { usi: "5b5a", official_kifu: "△５一玉" };
-  const move02 = { usi: "5b4a", official_kifu: "△４一玉" };
-  const move000 = { usi: "G*6b", official_kifu: "▲６二金打" };
-  const move010 = { usi: "G*5b", official_kifu: "▲５二金打" };
-  const move020 = { usi: "G*4b", official_kifu: "▲４二金打" };
-  const mateEval = { num_moves: 0, pieces: 0, futile: 0 };
-  const oneEval = { num_moves: 1, pieces: 1, futile: 0 };
-  const twoEval = { num_moves: 2, pieces: 1, futile: 0 };
-  const branches = [
-    {
-      moves: [],
-      possible_next_moves: [move0],
-      eval: { num_moves: 3, pieces: 2, futile: 0 },
-    },
-    {
-      moves: [move0],
-      possible_next_moves: [move00, move01, move02],
-      eval: twoEval,
-    },
-    {
-      moves: [move0, move00],
-      possible_next_moves: [move000],
-      eval: oneEval,
-    },
-    {
-      moves: [move0, move01],
-      possible_next_moves: [move010],
-      eval: oneEval,
-    },
-    {
-      moves: [move0, move02],
-      possible_next_moves: [move020],
-      eval: oneEval,
-    },
-    {
-      moves: [move0, move00, move000],
-      possible_next_moves: [],
-      eval: mateEval,
-    },
-    {
-      moves: [move0, move01, move010],
-      possible_next_moves: [],
-      eval: mateEval,
-    },
-    {
-      moves: [move0, move02, move020],
-      possible_next_moves: [],
-      eval: mateEval,
-    },
-  ];
+  const [branches, setBranches] = React.useState<Branches>([]);
   const [plyIndex, setPlyIndex] = React.useState(0);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [selectionData, setSelectionData] = React.useState(
@@ -132,11 +93,32 @@ export default function WholePlayer({}): JSX.Element {
     const dom = document.getElementById("shogi-player");
     // You need to set sfen after the component is mounted.
     // For example, if you give an sfen string to the component directly, it will not be reflected.
-    const alteredSfen = sfenUtils.makeMoves(
-      initialSfen,
-      mainstream.slice(0, plyIndex).map((move) => move.usi)
-    );
-    dom?.setAttribute("sfen", alteredSfen);
+    if (mode === Mode.Viewing) {
+      const alteredSfen = sfenUtils.makeMoves(
+        initialSfen,
+        mainstream.slice(0, plyIndex).map((move) => move.usi)
+      );
+      dom?.setAttribute("sfen", alteredSfen);
+    } else if (mode === Mode.Editing) {
+      dom?.setAttribute("sfen", initialSfen);
+    } else {
+      if (mode !== Mode.Solving) {
+        throw new Error("Invalid mode");
+      }
+      dom?.setAttribute("sfen", initialSfen);
+      (async () => {
+        const result = await solve(initialSfen);
+        if (result.isErr()) {
+          alert(result.error.message);
+          setMode(Mode.Editing);
+          return;
+        }
+        const branches = result.value;
+        setBranches(branches);
+        setSelectionData(createSelectionData(branches));
+        setMode(Mode.Viewing);
+      })();
+    }
   });
 
   return (
@@ -149,9 +131,9 @@ export default function WholePlayer({}): JSX.Element {
         <SP
           id="shogi-player"
           className="shogi-player left"
-          mode="edit"
+          mode={mode === Mode.Editing ? "edit" : "show"}
           update={(e: CustomEvent<PlayerUpdateEvent>) => {
-            if (editing) {
+            if (mode === Mode.Editing) {
               setInitialSfen(e.detail.sfen);
               window.history.replaceState(
                 null,
@@ -179,6 +161,7 @@ export default function WholePlayer({}): JSX.Element {
           手番: {initialSfen.split(" ")[1] === "b" ? "▲先手" : "△後手"}
           <br />
           <button
+            disabled={mode !== Mode.Editing}
             onClick={() => {
               setInitialSfen(sfenUtils.sfenChangePlayer(initialSfen));
             }}
@@ -191,6 +174,7 @@ export default function WholePlayer({}): JSX.Element {
           {sfenUtils.sfenAreBothKingsPresent(initialSfen) ? "有効" : "無効"}
           <br />
           <button
+            disabled={mode !== Mode.Editing}
             onClick={() => {
               if (sfenUtils.sfenAreBothKingsPresent(initialSfen)) {
                 setInitialSfen(sfenUtils.sfenRemoveBlackKing(initialSfen));
@@ -202,6 +186,38 @@ export default function WholePlayer({}): JSX.Element {
             }}
           >
             双玉詰将棋にする/やめる
+          </button>
+          {mode === Mode.Editing
+            ? "編集モード"
+            : mode === Mode.Solving
+            ? "求解中…"
+            : "手順閲覧モード"}
+          <br />
+          <button
+            disabled={mode === Mode.Solving}
+            onClick={() => {
+              switch (mode) {
+                case Mode.Viewing:
+                  const alteredSfen = sfenUtils.makeMoves(
+                    initialSfen,
+                    mainstream.slice(0, plyIndex).map((move) => move.usi)
+                  );
+                  setBranches([]);
+                  setPlyIndex(0);
+                  setSelectedIndex(0);
+                  setSelectionData(createSelectionData([]));
+                  setInitialSfen(alteredSfen);
+                  setMode(Mode.Editing);
+                  break;
+                case Mode.Editing:
+                  setMode(Mode.Solving);
+                  break;
+                case Mode.Solving:
+                  break;
+              }
+            }}
+          >
+            {mode === Mode.Editing ? "解く" : "編集モードにする"}
           </button>
         </div>
       </div>
