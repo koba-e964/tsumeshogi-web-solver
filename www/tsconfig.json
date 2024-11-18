@@ -10,8 +10,8 @@
     "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
-    "lib": ["dom", "ES2017"],
-    "module": "ES2015",
+    "lib": ["dom", "ES2017", "WebWorker"],
+    "module": "esNext",
     "target": "es5",
     "moduleResolution": "node",
     "jsx": "react"
