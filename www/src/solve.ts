@@ -1,9 +1,11 @@
 import { Branches } from "./branches";
 import { err, ok, Result } from "neverthrow";
 
-var wasmSolve: ((sfen: string) => Branches) | undefined = undefined;
+type solveType = (sfen: string, timeout_ms: number) => Promise<Branches>;
 
-export function setWasmSolve(solve: (sfen: string) => Branches): void {
+var wasmSolve: solveType | undefined = undefined;
+
+export function setWasmSolve(solve: solveType): void {
   wasmSolve = solve;
 }
 
@@ -14,7 +16,7 @@ export default async function solve(
     return err(new Error("Wasm is not loaded yet"));
   }
   // TODO: make asynchronous (appears to stop main thread)
-  const result = wasmSolve(sfen);
+  const result = await wasmSolve(sfen, 1000);
   console.log(result);
   if (result instanceof Error) {
     return err(result);

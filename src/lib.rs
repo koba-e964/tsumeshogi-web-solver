@@ -1,8 +1,11 @@
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 use shogi_core::{Move, Position};
 use shogi_official_kifu::display_single_move_kansuji;
 use shogi_usi_parser::FromUsi;
 use wasm_bindgen::prelude::*;
+use wasm_timer::Delay;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -53,12 +56,12 @@ fn example_branches() -> Branches {
     };
 
     let move0 = get_move(&["G*5c"]);
-    let move00 = get_move(&["G*5c","5b6a"]);
-    let move01 = get_move(&["G*5c","5b5a"]);
-    let move02 = get_move(&["G*5c","5b4a"]);
-    let move000 = get_move(&["G*5c","5b6a","G*6b"]);
-    let move010 = get_move(&["G*5c","5b5a","G*5b"]);
-    let move020 = get_move(&["G*5c","5b4a","G*4b"]);
+    let move00 = get_move(&["G*5c", "5b6a"]);
+    let move01 = get_move(&["G*5c", "5b5a"]);
+    let move02 = get_move(&["G*5c", "5b4a"]);
+    let move000 = get_move(&["G*5c", "5b6a", "G*6b"]);
+    let move010 = get_move(&["G*5c", "5b5a", "G*5b"]);
+    let move020 = get_move(&["G*5c", "5b4a", "G*4b"]);
 
     let mate_eval = Eval {
         num_moves: 0,
@@ -124,10 +127,15 @@ fn example_branches() -> Branches {
 }
 
 #[wasm_bindgen]
-pub fn solve(sfen: &str) -> JsValue {
+pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
     if sfen != EXAMPLE_SFEN {
         return JsError::new("Not implemented").into();
     }
+    // https://zenn.dev/dozo/articles/55d793d97157e8
+    Delay::new(Duration::from_millis(timeout_ms as u64))
+        .await
+        .unwrap();
     let branches = example_branches();
-    serde_wasm_bindgen::to_value(&branches).unwrap()
+    let result = serde_wasm_bindgen::to_value(&branches).unwrap();
+    result.into()
 }

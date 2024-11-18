@@ -17,6 +17,12 @@ shogi_official_kifu = "0.1.1"
 wasm-bindgen = "0.2"
 serde-wasm-bindgen = "0.6"
 wee_alloc = { version = "0.4.5", optional = true }
+wasm-timer = "0.2.5"
+wasm-bindgen-futures = "0.4.45"
+js-sys = "0.3.72"
+# https://zenn.dev/dozo/articles/55d793d97157e8
+# https://github.com/rustwasm/wasm-bindgen/issues/2215#issuecomment-796244209
+parking_lot = { version = "0.11.2", features = ["wasm-bindgen"] }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
