@@ -37,20 +37,20 @@ struct Eval {
 
 fn example_branches() -> Branches {
     // translated from solve.ts
-    let s = "sfen ".to_string() + &EXAMPLE_SFEN;
+    let s = "sfen ".to_string() + EXAMPLE_SFEN;
     let pos = Position::from_usi(&s).unwrap();
     let get_move = |mvs_usi: &[&str]| {
         let mut pos = pos.clone();
-        let n = mvs_usi.len();
-        for i in 0..n - 1 {
-            let mv = Move::from_usi(mvs_usi[i]).unwrap();
+        let (&mvs_usi_last, mvs_usi_init) = mvs_usi.split_last().unwrap();
+        for &mv in mvs_usi_init {
+            let mv = Move::from_usi(mv).unwrap();
             pos.make_move(mv).unwrap();
         }
-        let mv = Move::from_usi(mvs_usi[n - 1]).unwrap();
+        let mv = Move::from_usi(mvs_usi_last).unwrap();
         let official_kifu = display_single_move_kansuji(pos.inner(), mv).unwrap();
 
         JsMove {
-            usi: mvs_usi[n - 1].to_string(),
+            usi: mvs_usi_last.to_string(),
             official_kifu,
         }
     };
@@ -136,6 +136,5 @@ pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
         .await
         .unwrap();
     let branches = example_branches();
-    let result = serde_wasm_bindgen::to_value(&branches).unwrap();
-    result.into()
+    serde_wasm_bindgen::to_value(&branches).unwrap()
 }
