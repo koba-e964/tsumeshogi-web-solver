@@ -18,15 +18,29 @@ jobs:
       matrix:
         cargo-bloat-version:
           - '0.12.1'
+        twiggy-version:
+          - '0.7.0'
+        wasm-pack-version:
+          - '0.13.1'
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: '1.81.0'
+        components: 'clippy,rustfmt'
     - name: cargo version
       run: cargo --version
     - name: install cargo-bloat (v${{ matrix.cargo-bloat-version }})
       run: cargo install cargo-bloat --version ${{ matrix.cargo-bloat-version }}
+    - name: install twiggy (v${{ matrix.twiggy-version }})
+      run: cargo install twiggy --version ${{ matrix.twiggy-version }}
+    - name: install wasm-pack (v${{ matrix.wasm-pack-version }})
+      run: cargo install wasm-pack --version ${{ matrix.wasm-pack-version }}
+    - name: Build wasm
+      run: wasm-pack build --profiling --target web --out-dir pkg
     - name: Build
       run: cargo build --verbose
     - name: Run tests
@@ -41,3 +55,5 @@ jobs:
       run: cargo bloat --release
     - name: cargo bloat (display, per-crate, release)
       run: cargo bloat --release --crates
+    - name: twiggy
+      run: twiggy top pkg/tsumeshogi_web_solver_bg.wasm -n 20
