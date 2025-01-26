@@ -89,6 +89,8 @@ export default function WholePlayer({}): JSX.Element {
     }
   }
 
+  const [jsonOutput, setJsonOutput] = React.useState("");
+
   useEffect(() => {
     const dom = document.getElementById("shogi-player");
     // You need to set sfen after the component is mounted.
@@ -108,6 +110,8 @@ export default function WholePlayer({}): JSX.Element {
       dom?.setAttribute("sfen", initialSfen);
       (async () => {
         const result = await solve(initialSfen);
+        const jsonString = JSON.stringify(result, null, 2);
+        setJsonOutput(jsonString);
         if (result.isErr()) {
           alert(result.error.message);
           setMode(Mode.Editing);
@@ -231,7 +235,13 @@ export default function WholePlayer({}): JSX.Element {
       </div>
       <div>
         JSON output: <br />
-        <textarea id="json-output" readOnly rows={10} cols={80} />
+        <textarea
+          id="json-output"
+          readOnly
+          value={jsonOutput}
+          rows={20}
+          cols={80}
+        />
       </div>
     </div>
   );
