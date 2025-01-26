@@ -110,6 +110,7 @@ export default function WholePlayer({}): JSX.Element {
       dom?.setAttribute("sfen", initialSfen);
       (async () => {
         const result = await solve(initialSfen);
+        console.log(result);
         const jsonString = JSON.stringify(result, null, 2);
         setJsonOutput(jsonString);
         if (result.isErr()) {
@@ -117,7 +118,8 @@ export default function WholePlayer({}): JSX.Element {
           setMode(Mode.Editing);
           return;
         }
-        const branches = result.value;
+        const answer = result.value;
+        const branches = answer.branches;
         setBranches(branches);
         setSelectionData(createSelectionData(branches));
         setMode(Mode.Viewing);

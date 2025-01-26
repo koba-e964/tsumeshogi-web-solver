@@ -1,3 +1,8 @@
+export type Answer = {
+  branches: Branches;
+  elapsed_ms: number;
+};
+
 export type Branches = BranchEntry[];
 
 export type BranchEntry = {

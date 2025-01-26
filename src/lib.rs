@@ -1,25 +1,74 @@
-use std::time::Duration;
-
+use mate_solver::search;
 use serde::{Deserialize, Serialize};
-use shogi_core::{Move, Position};
+use shogi_core::{Move, PartialPosition, ToUsi};
 use shogi_official_kifu::display_single_move_kansuji;
 use shogi_usi_parser::FromUsi;
 use wasm_bindgen::prelude::*;
-use wasm_timer::Delay;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-const EXAMPLE_SFEN: &str = "9/4k4/9/4P4/9/9/9/9/9 b 2G2r2b2g4s4n4l17p 1";
+#[derive(Serialize, Deserialize)]
+pub struct Answer {
+    branches: Branches,
+    elapsed_ms: f64,
+}
 
-type Branches = Vec<BranchEntry>;
+pub type Branches = Vec<BranchEntry>;
 
 #[derive(Serialize, Deserialize)]
-struct BranchEntry {
+pub struct BranchEntry {
     moves: Vec<JsMove>,
     possible_next_moves: Vec<JsMove>,
     eval: Option<Eval>,
+}
+
+impl BranchEntry {
+    pub fn from_with_position(
+        entry: mate_solver::BranchEntry,
+        init_position: &PartialPosition,
+    ) -> Self {
+        let get_move = |mvs: &[Move]| {
+            let mut pos = init_position.clone();
+            let (&mvs_last, mvs_init) = mvs.split_last().expect("mvs.len() >= 1 must hold");
+            for &mv in mvs_init {
+                pos.make_move(mv).expect("Invalid move");
+            }
+            let official_kifu = display_single_move_kansuji(&pos, mvs_last)
+                .expect("Translation to official kifu failed");
+
+            JsMove {
+                usi: mvs_last.to_usi_owned(),
+                official_kifu,
+            }
+        };
+
+        let mut cur_pos = init_position.clone();
+        for &mv in &entry.moves {
+            if let None = cur_pos.make_move(mv) {
+                panic!("Invalid move");
+            }
+        }
+        Self {
+            moves: entry
+                .moves
+                .iter()
+                .enumerate()
+                .map(|(i, _mv)| get_move(&entry.moves[..i + 1]))
+                .collect(),
+            possible_next_moves: entry
+                .possible_next_moves
+                .iter()
+                .map(|mv| {
+                    let usi = mv.to_usi_owned();
+                    let official_kifu = display_single_move_kansuji(&cur_pos, *mv).unwrap();
+                    JsMove { usi, official_kifu }
+                })
+                .collect(),
+            eval: entry.eval.map(|eval| Eval::from(eval)),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -35,106 +84,41 @@ struct Eval {
     futile: i32,
 }
 
-fn example_branches() -> Branches {
-    // translated from solve.ts
-    let s = "sfen ".to_string() + EXAMPLE_SFEN;
-    let pos = Position::from_usi(&s).unwrap();
-    let get_move = |mvs_usi: &[&str]| {
-        let mut pos = pos.clone();
-        let (&mvs_usi_last, mvs_usi_init) = mvs_usi.split_last().unwrap();
-        for &mv in mvs_usi_init {
-            let mv = Move::from_usi(mv).unwrap();
-            pos.make_move(mv).unwrap();
+impl From<mate_solver::Eval> for Eval {
+    fn from(eval: mate_solver::Eval) -> Self {
+        Self {
+            num_moves: eval.num_moves,
+            pieces: eval.pieces,
+            futile: eval.futile,
         }
-        let mv = Move::from_usi(mvs_usi_last).unwrap();
-        let official_kifu = display_single_move_kansuji(pos.inner(), mv).unwrap();
-
-        JsMove {
-            usi: mvs_usi_last.to_string(),
-            official_kifu,
-        }
-    };
-
-    let move0 = get_move(&["G*5c"]);
-    let move00 = get_move(&["G*5c", "5b6a"]);
-    let move01 = get_move(&["G*5c", "5b5a"]);
-    let move02 = get_move(&["G*5c", "5b4a"]);
-    let move000 = get_move(&["G*5c", "5b6a", "G*6b"]);
-    let move010 = get_move(&["G*5c", "5b5a", "G*5b"]);
-    let move020 = get_move(&["G*5c", "5b4a", "G*4b"]);
-
-    let mate_eval = Eval {
-        num_moves: 0,
-        pieces: 0,
-        futile: 0,
-    };
-    let one_eval = Eval {
-        num_moves: 1,
-        pieces: 1,
-        futile: 0,
-    };
-    let branches = vec![
-        BranchEntry {
-            moves: vec![],
-            possible_next_moves: vec![move0.clone()],
-            eval: Some(Eval {
-                num_moves: 3,
-                pieces: 2,
-                futile: 0,
-            }),
-        },
-        BranchEntry {
-            moves: vec![move0.clone()],
-            possible_next_moves: vec![move00.clone(), move01.clone(), move02.clone()],
-            eval: Some(Eval {
-                num_moves: 2,
-                pieces: 1,
-                futile: 0,
-            }),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move00.clone()],
-            possible_next_moves: vec![move000.clone()],
-            eval: Some(one_eval),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move01.clone()],
-            possible_next_moves: vec![move010.clone()],
-            eval: Some(one_eval),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move02.clone()],
-            possible_next_moves: vec![move020.clone()],
-            eval: Some(one_eval),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move00, move000],
-            possible_next_moves: vec![],
-            eval: Some(mate_eval),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move01, move010],
-            possible_next_moves: vec![],
-            eval: Some(mate_eval),
-        },
-        BranchEntry {
-            moves: vec![move0.clone(), move02, move020],
-            possible_next_moves: vec![],
-            eval: Some(mate_eval),
-        },
-    ];
-    branches
+    }
 }
 
 #[wasm_bindgen]
 pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
-    if sfen != EXAMPLE_SFEN {
-        return JsError::new("Not implemented").into();
-    }
+    let sfen = "sfen ".to_string() + sfen;
     // https://zenn.dev/dozo/articles/55d793d97157e8
-    Delay::new(Duration::from_millis(timeout_ms as u64))
-        .await
-        .unwrap();
-    let branches = example_branches();
-    serde_wasm_bindgen::to_value(&branches).unwrap()
+    let position = if let Ok(pos) = PartialPosition::from_usi(&sfen) {
+        pos
+    } else {
+        return JsError::new("Invalid SFEN").into();
+    };
+    let start = wasm_timer::Instant::now();
+    let answer = search(&position, timeout_ms as u64);
+    let elapsed_ms = start.elapsed().as_millis() as f64;
+    match answer.inner {
+        Ok(ok) => {
+            let branches: Vec<_> = ok
+                .branches
+                .into_iter()
+                .map(|entry| BranchEntry::from_with_position(entry, &position))
+                .collect();
+            let answer = Answer {
+                branches,
+                elapsed_ms,
+            };
+            serde_wasm_bindgen::to_value(&answer).unwrap()
+        }
+        Err(err) => JsError::new(&format!("error: {:?}", err)).into(),
+    }
 }
