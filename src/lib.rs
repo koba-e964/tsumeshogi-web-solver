@@ -46,7 +46,7 @@ impl BranchEntry {
 
         let mut cur_pos = init_position.clone();
         for &mv in &entry.moves {
-            if let None = cur_pos.make_move(mv) {
+            if cur_pos.make_move(mv).is_none() {
                 panic!("Invalid move");
             }
         }
@@ -66,7 +66,7 @@ impl BranchEntry {
                     JsMove { usi, official_kifu }
                 })
                 .collect(),
-            eval: entry.eval.map(|eval| Eval::from(eval)),
+            eval: entry.eval.map(Eval::from),
         }
     }
 }
