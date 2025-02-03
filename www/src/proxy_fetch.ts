@@ -7,7 +7,7 @@ export default async function ProxyFetch(rawUrl: string): Promise<Uint8Array> {
       rawUrl
     )}`;
   } else {
-    url = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+    url = `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`;
   }
   const resp = await fetch(url, {
     method: "GET",
