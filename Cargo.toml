@@ -30,6 +30,9 @@ mate_solver = { git = "https://github.com/rust-shogi-crates/shogi_mate_solver", 
 [lib]
 crate-type = ["cdylib"]
 
+[profile.dev]
+opt-level = "z"
+
 [profile.release]
 opt-level = "z"
 

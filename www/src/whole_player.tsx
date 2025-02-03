@@ -6,13 +6,13 @@ import "./App.css";
 import { ReadKif } from "./kif_parse";
 import * as sfenUtils from "./sfen";
 import BranchSelector from "./branch_selector";
+import { solveWithWorker } from "./index";
 import {
   branchDictFromBranches,
   Branches,
   createSelectionData,
   Move,
 } from "./branches";
-import solve from "./solve";
 
 const defaultSfen: string = "9/4k4/9/4P4/9/9/9/9/9 b 2G2r2b2g4s4n4l17p 1";
 
@@ -109,8 +109,8 @@ export default function WholePlayer({}): JSX.Element {
       }
       dom?.setAttribute("sfen", initialSfen);
       (async () => {
-        const result = await solve(initialSfen);
-        console.log(result);
+        const result = await solveWithWorker(initialSfen);
+        console.log("whole_player: result =", result);
         const jsonString = JSON.stringify(result, null, 2);
         setJsonOutput(jsonString);
         if (result.isErr()) {

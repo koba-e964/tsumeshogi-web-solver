@@ -6,11 +6,14 @@ const path = require("path");
 
 module.exports = {
   // 入力元
-  entry: "./src/index.tsx",
+  entry: {
+    main: "./src/index.tsx",
+    worker: "./src/worker.js",
+  },
   // 出力先
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "main.js",
+    filename: "[name].js",
   },
   module: {
     rules: [
@@ -22,7 +25,15 @@ module.exports = {
         use: "ts-loader",
       },
       {
-        test: /\.m?js/,
+        test: /^worker\.js$/,
+        // https://zenn.dev/wok/articles/0020_bundle-webworker
+        loader: "worker-loader",
+        options: {
+          inline: "no-fallback",
+        },
+      },
+      {
+        test: /\.m?js$/,
         resolve: {
           fullySpecified: false,
         },
@@ -45,11 +56,19 @@ module.exports = {
   // https://zenn.dev/sprout2000/articles/9d026d3d9e0e8f
   devServer: {
     static: {
-      directory: "./",
+      directory: __dirname,
+    },
+    devMiddleware: {
+      writeToDisk: true,
     },
   },
   plugins: [
-    new CopyWebpackPlugin({ patterns: ["index.html"] }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "index.html", to: path.resolve(__dirname, "dist") },
+        // { from: "src/worker.js", to: path.resolve(__dirname, "dist") },
+      ],
+    }),
     new WasmPackPlugin({
       crateDirectory: path.join(__dirname, ".."),
       // https://stackoverflow.com/a/60569124
