@@ -5,10 +5,6 @@ use shogi_official_kifu::display_single_move_kansuji;
 use shogi_usi_parser::FromUsi;
 use wasm_bindgen::prelude::*;
 
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[derive(Serialize, Deserialize)]
 pub struct Answer {
     branches: Branches,
