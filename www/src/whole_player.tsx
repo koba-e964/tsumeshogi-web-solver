@@ -245,6 +245,10 @@ export default function WholePlayer({}): JSX.Element {
           cols={80}
         />
       </div>
+      <div>
+        <h1>注意</h1>
+        <p>一旦解き始めたらタブなどを閉じるまで止まりません。</p>
+      </div>
     </div>
   );
 }
