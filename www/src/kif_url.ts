@@ -3,7 +3,7 @@ import ProxyFetch from "./proxy_fetch";
 import Encoding from "encoding-japanese";
 
 export async function PageUrlToKifUrl(
-  pageUrl: string
+  pageUrl: string,
 ): Promise<Result<string, Error>> {
   if (pageUrl.endsWith(".kif")) {
     return ok(pageUrl);
@@ -17,7 +17,7 @@ export async function PageUrlToKifUrl(
   }
   if (pageUrl.startsWith("https://www.shogi.or.jp/tsume_shogi/everyday/")) {
     const content = Encoding.codeToString(await ProxyFetch(pageUrl));
-    const match = content.match(/kifu_path:     '(.*)',/);
+    const match = content.match(/kifu_path: {5}'(.*)',/);
     if (match) {
       return ok(match[1]);
     } else {

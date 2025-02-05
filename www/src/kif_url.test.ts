@@ -26,7 +26,7 @@ test(
       "https://www.shogi.or.jp/tsume_shogi/data/everyday_20241106.kif";
     expect(await PageUrlToKifUrl(pageUrl)).toStrictEqual(ok(expectedKifUrl));
   },
-  longTimeout
+  longTimeout,
 );
 
 test(
@@ -38,7 +38,7 @@ test(
       "https://www.shogi.or.jp/tsume_shogi/data/everyday_20241009.kif";
     expect(await PageUrlToKifUrl(pageUrl)).toStrictEqual(ok(expectedKifUrl));
   },
-  longTimeout
+  longTimeout,
 );
 
 test(
@@ -50,7 +50,7 @@ test(
       "https://www.shogi.or.jp/tsume_shogi/data/everyday_20230111.kif";
     expect(await PageUrlToKifUrl(pageUrl)).toStrictEqual(ok(expectedKifUrl));
   },
-  longTimeout
+  longTimeout,
 );
 
 test(
@@ -62,5 +62,5 @@ test(
       "https://www.shogi.or.jp/tsume_shogi/data/everyday_20231101.kif";
     expect(await PageUrlToKifUrl(pageUrl)).toStrictEqual(ok(expectedKifUrl));
   },
-  longTimeout
+  longTimeout,
 );

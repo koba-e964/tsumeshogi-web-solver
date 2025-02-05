@@ -4,7 +4,7 @@ export default async function ProxyFetch(rawUrl: string): Promise<Uint8Array> {
     // corsproxy.io doesn't support HTML contents.
     // Falls back to slower but more reliable codetabs.com.
     url = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(
-      rawUrl
+      rawUrl,
     )}`;
   } else {
     url = `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`;

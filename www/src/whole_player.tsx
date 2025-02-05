@@ -49,7 +49,7 @@ function sfenInputHandler(): void {
   dom?.setAttribute("sfen", sfen);
 }
 
-export default function WholePlayer({}): JSX.Element {
+export default function WholePlayer(_: Record<string, never>): JSX.Element {
   // https://www.ai-shift.co.jp/techblog/3927
   const SP = createComponent({
     tagName: "shogi-player",
@@ -71,7 +71,7 @@ export default function WholePlayer({}): JSX.Element {
   const [plyIndex, setPlyIndex] = React.useState(0);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [selectionData, setSelectionData] = React.useState(
-    createSelectionData(branches)
+    createSelectionData(branches),
   );
   const branchDict = branchDictFromBranches(branches);
   const mainstream: Move[] = [];
@@ -98,7 +98,7 @@ export default function WholePlayer({}): JSX.Element {
     if (mode === Mode.Viewing) {
       const alteredSfen = sfenUtils.makeMoves(
         initialSfen,
-        mainstream.slice(0, plyIndex).map((move) => move.usi)
+        mainstream.slice(0, plyIndex).map((move) => move.usi),
       );
       dom?.setAttribute("sfen", alteredSfen);
     } else if (mode === Mode.Editing) {
@@ -144,7 +144,7 @@ export default function WholePlayer({}): JSX.Element {
               window.history.replaceState(
                 null,
                 "",
-                `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`
+                `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`,
               );
             }
           }}
@@ -204,16 +204,18 @@ export default function WholePlayer({}): JSX.Element {
             onClick={() => {
               switch (mode) {
                 case Mode.Viewing:
-                  const alteredSfen = sfenUtils.makeMoves(
-                    initialSfen,
-                    mainstream.slice(0, plyIndex).map((move) => move.usi)
-                  );
-                  setBranches([]);
-                  setPlyIndex(0);
-                  setSelectedIndex(0);
-                  setSelectionData(createSelectionData([]));
-                  setInitialSfen(alteredSfen);
-                  setMode(Mode.Editing);
+                  {
+                    const alteredSfen = sfenUtils.makeMoves(
+                      initialSfen,
+                      mainstream.slice(0, plyIndex).map((move) => move.usi),
+                    );
+                    setBranches([]);
+                    setPlyIndex(0);
+                    setSelectedIndex(0);
+                    setSelectionData(createSelectionData([]));
+                    setInitialSfen(alteredSfen);
+                    setMode(Mode.Editing);
+                  }
                   break;
                 case Mode.Editing:
                   setMode(Mode.Solving);
@@ -253,7 +255,9 @@ export default function WholePlayer({}): JSX.Element {
   );
 }
 
-export async function getStaticProps(): Promise<{ props: {} }> {
+export async function getStaticProps(): Promise<{
+  props: Record<string, never>;
+}> {
   return {
     props: {},
   };

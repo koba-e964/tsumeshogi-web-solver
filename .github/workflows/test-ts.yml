@@ -1,5 +1,5 @@
 # https://qiita.com/shun198/items/86668be6a90634f9480c
-name: Jest
+name: TypeScript-related tests
 
 on:
   schedule:
@@ -31,5 +31,9 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
       - name: Install packages
         run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Prettier
+        run: npm run test:prettier
       - name: Show coverage
         run: npm test -- --bail --maxWorkers=100% --watchAll=false --coverage

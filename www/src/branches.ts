@@ -42,7 +42,7 @@ export class BranchDict<T> {
 }
 
 export function branchDictFromBranches(
-  branches: Branches
+  branches: Branches,
 ): BranchDict<BranchEntry> {
   const branchDict: { [underscoreConcatenatedMoves: string]: BranchEntry } = {};
   for (const branch of branches) {
