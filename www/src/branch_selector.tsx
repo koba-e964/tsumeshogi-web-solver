@@ -16,7 +16,7 @@ export default function BranchSelector({
     plyList.push(
       <option value={`${i}`} key={`move_${i}`}>
         {i}:{text}
-      </option>
+      </option>,
     );
   }
   const branchList = [];
@@ -27,7 +27,7 @@ export default function BranchSelector({
       branchList.push(
         <option value={`${i}`} key={`branch_${i}`}>
           {entry.possible_next_moves[i].official_kifu}
-        </option>
+        </option>,
       );
     }
   }

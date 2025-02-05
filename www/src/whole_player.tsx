@@ -196,8 +196,8 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
           {mode === Mode.Editing
             ? "編集モード"
             : mode === Mode.Solving
-            ? "求解中…"
-            : "手順閲覧モード"}
+              ? "求解中…"
+              : "手順閲覧モード"}
           <br />
           <button
             disabled={mode === Mode.Solving}

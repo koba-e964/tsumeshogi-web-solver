@@ -10,7 +10,7 @@
     "build": "webpack build --mode production",
     "test": "jest",
     "lint": "eslint .",
-    "test:prettier": "prettier --check src/*.ts"
+    "test:prettier": "prettier --check src/*.ts?"
   },
   "repository": {
     "type": "git",
