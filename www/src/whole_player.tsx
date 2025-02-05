@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { JSX, useEffect } from "react";
 import Head from "next/head";
 import { ShogiPlayer } from "shogi-player-webcomponents";
 import { createComponent } from "@lit/react";

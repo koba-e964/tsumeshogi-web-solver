@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, JSX } from "react";
 import { branchDictFromBranches, Branches, Move } from "./branches";
 
 export default function BranchSelector({
