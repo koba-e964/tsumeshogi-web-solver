@@ -8,7 +8,7 @@ module.exports = {
   // 入力元
   entry: {
     main: "./src/index.tsx",
-    worker: "./src/worker.js",
+    worker: "./src/worker.ts",
   },
   // 出力先
   output: {
@@ -23,14 +23,6 @@ module.exports = {
         test: /\.tsx?$/,
         // TypeScript をコンパイルする
         use: "ts-loader",
-      },
-      {
-        test: /^worker\.js$/,
-        // https://zenn.dev/wok/articles/0020_bundle-webworker
-        loader: "worker-loader",
-        options: {
-          inline: "no-fallback",
-        },
       },
       {
         test: /\.m?js$/,
@@ -64,10 +56,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [
-        { from: "index.html", to: path.resolve(__dirname, "dist") },
-        // { from: "src/worker.js", to: path.resolve(__dirname, "dist") },
-      ],
+      patterns: [{ from: "index.html", to: path.resolve(__dirname, "dist") }],
     }),
     new WasmPackPlugin({
       crateDirectory: path.join(__dirname, ".."),

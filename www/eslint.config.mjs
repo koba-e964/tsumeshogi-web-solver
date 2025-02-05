@@ -8,7 +8,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
-    ignores: ["*.config.js", "src/worker.js", "dist"],
+    ignores: ["*.config.js", "src/worker.ts", "dist"],
   },
   {
     rules: {
