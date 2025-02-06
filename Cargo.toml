@@ -19,11 +19,17 @@ serde-wasm-bindgen = "0.6"
 wasm-timer = "0.2.5"
 wasm-bindgen-futures = "0.4.45"
 js-sys = "0.3.72"
-getrandom = { version = "0.2.15", features = ["js"]} # this crate doesn't depend on it directly, but it needs `js` feature
 # https://zenn.dev/dozo/articles/55d793d97157e8
 # https://github.com/rustwasm/wasm-bindgen/issues/2215#issuecomment-796244209
 parking_lot = { version = "0.11.2", features = ["wasm-bindgen"] }
 mate_solver = { git = "https://github.com/rust-shogi-crates/shogi_mate_solver", branch = "wasm-support" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.3", features = ["wasm_js"]} # this crate doesn't depend on it directly, but it needs `wasm_js` feature
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+getrandom = { version = "0.3" }
+
 
 [lib]
 crate-type = ["cdylib"]
