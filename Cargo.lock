@@ -188,7 +188,7 @@ checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
 [[package]]
 name = "mate_solver"
 version = "0.1.0"
-source = "git+https://github.com/rust-shogi-crates/shogi_mate_solver?branch=wasm-support#361816c1cee42f07c347fe7057a1e610505edfd4"
+source = "git+https://github.com/rust-shogi-crates/shogi_mate_solver?branch=wasm-support#8f3171c877930da25fd252e6925e9b6451c9cb9e"
 dependencies = [
  "once_cell",
  "rand",
