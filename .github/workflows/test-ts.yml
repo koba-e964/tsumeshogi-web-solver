@@ -3,11 +3,11 @@ name: TypeScript-related tests
 
 on:
   schedule:
-    - cron: '25 15 * * *'
+    - cron: "25 15 * * *"
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -27,8 +27,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ env.WORKING_DIRECTORY }}/package.json
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
       - name: Install packages
         run: npm ci
       - name: ESLint
