@@ -132,7 +132,9 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
       <Head>
         <title>詰将棋 Web ソルバー</title>
       </Head>
-      <h1>詰将棋 Web ソルバー</h1>
+      <h1>
+        <a href="../">こばのページ</a>/詰将棋 Web ソルバー
+      </h1>
       <div className="whole-player">
         <SP
           id="shogi-player"
