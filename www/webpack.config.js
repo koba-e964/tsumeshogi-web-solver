@@ -56,7 +56,10 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: "index.html", to: path.resolve(__dirname, "dist") }],
+      patterns: [
+        { from: "index.html", to: path.resolve(__dirname, "dist") },
+        { from: "favicon.ico", to: path.resolve(__dirname, "dist") },
+      ],
     }),
     new WasmPackPlugin({
       crateDirectory: path.join(__dirname, ".."),
