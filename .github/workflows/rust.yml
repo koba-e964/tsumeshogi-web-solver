@@ -39,9 +39,7 @@ jobs:
       - name: install wasm-pack (v${{ matrix.wasm-pack-version }})
         run: cargo install wasm-pack --version ${{ matrix.wasm-pack-version }}
       - name: Build wasm
-        # We add RUSTFLAGS here because in GitHub Actions, `wasm-pack` doesn't seem to look at `.cargo/config.toml`.
-        # It should be unnecessary: in the local environment, `wasm-pack build` works without it.
-        run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' wasm-pack build --out-dir pkg --verbose
+        run: wasm-pack build --out-dir pkg --verbose
       - name: Build
         run: cargo build --verbose
       - name: Run tests
