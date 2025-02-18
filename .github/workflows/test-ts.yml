@@ -1,5 +1,7 @@
 # https://qiita.com/shun198/items/86668be6a90634f9480c
 name: TypeScript-related tests
+permissions:
+  contents: read
 
 on:
   schedule:
