@@ -99,10 +99,7 @@ pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
     } else {
         return JsError::new("Invalid SFEN").into();
     };
-    // TODO: https://github.com/tomaka/wasm-timer/issues/12
-    // let start = wasm_timer::Instant::now();
     let answer = search(&position, timeout_ms as u64);
-    // let elapsed_ms = start.elapsed().as_millis() as f64;
     let elapsed_ms = 0.0;
     match answer.inner {
         Ok(ok) => {

@@ -1,5 +1,4 @@
 import React, { JSX, useEffect } from "react";
-import Head from "next/head";
 import { ShogiPlayer } from "shogi-player-webcomponents";
 import { createComponent } from "@lit/react";
 import "./App.css";
@@ -129,9 +128,6 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
 
   return (
     <div className="whole-page">
-      <Head>
-        <title>詰将棋 Web ソルバー</title>
-      </Head>
       <h1>
         <a href="../">こばのページ</a>/詰将棋 Web ソルバー
       </h1>
