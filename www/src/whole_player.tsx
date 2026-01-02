@@ -253,6 +253,19 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
         <h1>注意</h1>
         <p>一旦解き始めたらタブなどを閉じるまで止まりません。</p>
       </div>
+      <div>
+        <p>
+          このプロジェクトは{" "}
+          <a
+            href="https://sugyan.com/shogi-player-webcomponents/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            shogi-player-webcomponents
+          </a>{" "}
+          を使用しています。
+        </p>
+      </div>
     </div>
   );
 }
