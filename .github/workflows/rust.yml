@@ -23,7 +23,7 @@ jobs:
         twiggy-version:
           - "0.8.0"
         wasm-pack-version:
-          - "0.13.1"
+          - "0.14.0"
 
     runs-on: ubuntu-latest
 

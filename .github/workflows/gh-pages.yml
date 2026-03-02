@@ -16,7 +16,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - name: Install wasm-pack
         run: |
-          cargo install wasm-pack --version 0.13.1
+          cargo install wasm-pack --version 0.14.0
       - uses: actions/setup-node@v6
         with:
           node-version: "22.9.0"
