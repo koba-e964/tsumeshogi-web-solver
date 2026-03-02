@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # frozen: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-merge-conflict
+
+  - repo: local
+    hooks:
+      - id: cargo-fmt-check
+        name: cargo fmt --all -- --check
+        entry: cargo fmt --all -- --check
+        language: system
+        pass_filenames: false
+        files: '^src/|^Cargo\.(toml|lock)$'
+
+      - id: npm-lint
+        name: npm run lint (www)
+        entry: sh -c 'cd www && npm run lint'
+        language: system
+        pass_filenames: false
+        files: '^www/'
+
+      - id: npm-prettier-check
+        name: npm run test:prettier (www)
+        entry: sh -c 'cd www && npm run test:prettier'
+        language: system
+        pass_filenames: false
+        files: '^www/'
