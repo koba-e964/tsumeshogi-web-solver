@@ -7,6 +7,7 @@
     "noImplicitThis": true,
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
+    "rootDir": "./src",
     "outDir": "./dist/",
     "sourceMap": true,
     "noImplicitAny": true,
@@ -14,10 +15,13 @@
     "module": "esNext",
     "target": "es5",
     "moduleResolution": "node",
-    "jsx": "react"
+    "jsx": "react",
+    "ignoreDeprecations": "6.0"
   },
   "include": [
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts"
   ],
   "exclude": []
 }
