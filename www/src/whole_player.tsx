@@ -140,13 +140,14 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
           id="shogi-player"
           className="shogi-player left"
           mode={mode === Mode.Editing ? "edit" : "show"}
-          update={(e: CustomEvent<PlayerUpdateEvent>) => {
+          update={(e: Event) => {
+            const customEvent = e as CustomEvent<PlayerUpdateEvent>;
             if (mode === Mode.Editing) {
-              setInitialSfen(e.detail.sfen);
+              setInitialSfen(customEvent.detail.sfen);
               window.history.replaceState(
                 null,
                 "",
-                `?${new URLSearchParams({ sfen: e.detail.sfen }).toString()}`,
+                `?${new URLSearchParams({ sfen: customEvent.detail.sfen }).toString()}`,
               );
             }
           }}
