@@ -17,7 +17,7 @@ test("aidn 5_1 idem", async () => {
 
 // TODO: involves fetch, should be moved to integration test
 const longTimeout = 20000;
-test(
+test.skip(
   "shogi.or.jp 20241167",
   async () => {
     const pageUrl =
@@ -29,7 +29,7 @@ test(
   longTimeout,
 );
 
-test(
+test.skip(
   "shogi.or.jp 20241097",
   async () => {
     const pageUrl =
@@ -41,7 +41,7 @@ test(
   longTimeout,
 );
 
-test(
+test.skip(
   "shogi.or.jp 20231117",
   async () => {
     const pageUrl =
@@ -53,7 +53,7 @@ test(
   longTimeout,
 );
 
-test(
+test.skip(
   "shogi.or.jp 20231119",
   async () => {
     const pageUrl =
