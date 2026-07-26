@@ -128,6 +128,7 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
 
   return (
     <div className="whole-page">
+      <title>詰将棋 Web ソルバー</title>
       <h1>
         <a href="../">こばのページ</a>/詰将棋 Web ソルバー
       </h1>
