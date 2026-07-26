@@ -19,7 +19,7 @@ jobs:
           cargo install wasm-pack --version 0.15.0
       - uses: actions/setup-node@v6
         with:
-          node-version: "22.9.0"
+          node-version-file: www/package.json
       - run: npm install
         working-directory: ./www
       - run: npm test

@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "description": "Tsume-shogi Web Solver",
   "main": "dist/index.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "#comment script-reference": "https://zenn.dev/sprout2000/articles/9d026d3d9e0e8f",
     "dev": "webpack serve --mode development",
