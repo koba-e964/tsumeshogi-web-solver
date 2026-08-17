@@ -9,7 +9,7 @@
         "capability": "Run git worktree add and git status for mate_solver."
       },
       "validation": "git -C ../shogi_mate_solver-worktrees/stat-emitting-feature branch --show-current",
-      "passes": false
+      "passes": true
     },
     {
       "id": "upstream-root-stats",
@@ -20,7 +20,7 @@
         "capability": "Edit file; run cargo fmt and cargo test in the upstream worktree."
       },
       "validation": "cargo test",
-      "passes": false
+      "passes": true
     },
     {
       "id": "upstream-pr",
@@ -31,7 +31,7 @@
         "capability": "Run git status, git add, git commit, git push, and gh pr create/view for mate_solver."
       },
       "validation": "gh pr view",
-      "passes": false
+      "passes": true
     },
     {
       "id": "web-rust-stats-payload",
@@ -42,7 +42,7 @@
         "capability": "Edit files; run cargo test and dependency update commands needed for mate_solver."
       },
       "validation": "cargo test",
-      "passes": false
+      "passes": true
     },
     {
       "id": "web-types-stats",
@@ -53,7 +53,7 @@
         "capability": "Edit file; run frontend lint, prettier check, and build."
       },
       "validation": "cd www && npm run lint && npm run test:prettier && npm run build",
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -168,7 +168,7 @@ checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
 [[package]]
 name = "mate_solver"
 version = "0.1.0"
-source = "git+https://github.com/rust-shogi-crates/shogi_mate_solver#bfcb3c73c88ba30fb8457d7dd67fb5cbcd6681b5"
+source = "git+https://github.com/rust-shogi-crates/shogi_mate_solver?rev=1f02881fbaef5735d58a79ff5c7ef1ea0181e8c2#1f02881fbaef5735d58a79ff5c7ef1ea0181e8c2"
 dependencies = [
  "once_cell",
  "rand",

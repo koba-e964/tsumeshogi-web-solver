@@ -1,7 +1,7 @@
 import solve, { setWasmSolve } from "./solve";
 import init, { solve as solveWasm } from "../../pkg";
 import { Result } from "neverthrow";
-import { Answer } from "./branches";
+import { SolveResult } from "./branches";
 
 // https://github.com/rustwasm/wasm-bindgen/issues/3306#issuecomment-1434755209
 // https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
@@ -21,9 +21,13 @@ onmessage = async (e: MessageEvent): Promise<void> => {
     return;
   }
   console.log("sfen = ", sfen);
-  const workerResult: Result<Answer, Error> = await solve(sfen);
+  const workerResult: Result<SolveResult, Error> = await solve(sfen);
   console.log("Posting message back to main script");
   console.log(workerResult);
   console.log(workerResult.isOk());
-  self.postMessage(JSON.stringify(workerResult));
+  if (workerResult.isOk()) {
+    self.postMessage(JSON.stringify(workerResult.value));
+  } else {
+    self.postMessage(JSON.stringify({ error: workerResult.error.message }));
+  }
 };

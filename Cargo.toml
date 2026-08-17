@@ -22,7 +22,7 @@ js-sys = "0.3.72"
 # https://zenn.dev/dozo/articles/55d793d97157e8
 # https://github.com/rustwasm/wasm-bindgen/issues/2215#issuecomment-796244209
 parking_lot = { version = "0.11.2", features = ["wasm-bindgen"] }
-mate_solver = { git = "https://github.com/rust-shogi-crates/shogi_mate_solver" }
+mate_solver = { git = "https://github.com/rust-shogi-crates/shogi_mate_solver", rev = "1f02881fbaef5735d58a79ff5c7ef1ea0181e8c2" }
 
 [lib]
 crate-type = ["cdylib"]
