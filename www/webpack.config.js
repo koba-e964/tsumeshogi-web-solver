@@ -49,6 +49,9 @@ module.exports = {
   devServer: {
     static: {
       directory: __dirname,
+      watch: {
+        ignored: [/node_modules/, /dist/, /pkg/],
+      },
     },
     devMiddleware: {
       writeToDisk: true,
