@@ -111,14 +111,17 @@ export default function WholePlayer(_: Record<string, never>): JSX.Element {
       (async () => {
         const result = await solveWithWorker(initialSfen);
         console.log("whole_player: result =", result);
-        const jsonString = JSON.stringify(result, null, 2);
-        setJsonOutput(jsonString);
         if (result.isErr()) {
+          setJsonOutput(
+            JSON.stringify({ error: result.error.message }, null, 2),
+          );
           alert(result.error.message);
           setMode(Mode.Editing);
           return;
         }
-        const answer = result.value;
+        const jsonString = JSON.stringify(result.value, null, 2);
+        setJsonOutput(jsonString);
+        const answer = result.value.answer;
         const branches = answer.branches;
         setBranches(branches);
         setSelectionData(createSelectionData(branches));

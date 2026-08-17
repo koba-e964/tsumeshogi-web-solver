@@ -1,7 +1,10 @@
-import { Answer } from "./branches";
+import { SolveResult } from "./branches";
 import { err, ok, Result } from "neverthrow";
 
-type solveType = (sfen: string, timeout_ms: number) => Promise<Answer | Error>;
+type solveType = (
+  sfen: string,
+  timeout_ms: number,
+) => Promise<SolveResult | Error>;
 
 let wasmSolve: solveType | undefined = undefined;
 
@@ -11,7 +14,7 @@ export function setWasmSolve(solve: solveType): void {
 
 export default async function solve(
   sfen: string,
-): Promise<Result<Answer, Error>> {
+): Promise<Result<SolveResult, Error>> {
   if (wasmSolve === undefined) {
     return err(new Error("Wasm is not loaded yet"));
   }

@@ -8,7 +8,47 @@ use wasm_bindgen::prelude::*;
 #[derive(Serialize, Deserialize)]
 pub struct Answer {
     branches: Branches,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SolveResult {
+    stat: Stat,
+    answer: Answer,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Stat {
+    search: SearchStats,
     elapsed_ms: f64,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SearchStats {
+    df_pn: DfPnStats,
+    eval: EvalStats,
+}
+
+impl From<mate_solver::SearchStats> for SearchStats {
+    fn from(stats: mate_solver::SearchStats) -> Self {
+        Self {
+            df_pn: DfPnStats {
+                positions_inspected: stats.df_pn.positions_inspected.to_string(),
+            },
+            eval: EvalStats {
+                positions_inspected: stats.eval.positions_inspected.to_string(),
+            },
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct DfPnStats {
+    positions_inspected: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct EvalStats {
+    positions_inspected: String,
 }
 
 pub type Branches = Vec<BranchEntry>;
@@ -104,6 +144,7 @@ pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
     let answer = search(&position, timeout_ms as u64);
     // let elapsed_ms = start.elapsed().as_millis() as f64;
     let elapsed_ms = 0.0;
+    let search = SearchStats::from(answer.stats);
     match answer.inner {
         Ok(ok) => {
             let branches: Vec<_> = ok
@@ -111,11 +152,10 @@ pub async fn solve(sfen: &str, timeout_ms: i32) -> JsValue {
                 .into_iter()
                 .map(|entry| BranchEntry::from_with_position(entry, &position))
                 .collect();
-            let answer = Answer {
-                branches,
-                elapsed_ms,
-            };
-            serde_wasm_bindgen::to_value(&answer).unwrap()
+            let answer = Answer { branches };
+            let stat = Stat { search, elapsed_ms };
+            let result = SolveResult { stat, answer };
+            serde_wasm_bindgen::to_value(&result).unwrap()
         }
         Err(err) => JsError::new(&format!("error: {:?}", err)).into(),
     }

@@ -1,6 +1,28 @@
+export type SolveResult = {
+  stat: Stat;
+  answer: Answer;
+};
+
 export type Answer = {
   branches: Branches;
+};
+
+export type Stat = {
+  search: SearchStats;
   elapsed_ms: number;
+};
+
+export type SearchStats = {
+  df_pn: DfPnStats;
+  eval: EvalStats;
+};
+
+export type DfPnStats = {
+  positions_inspected: string;
+};
+
+export type EvalStats = {
+  positions_inspected: string;
 };
 
 export type Branches = BranchEntry[];
